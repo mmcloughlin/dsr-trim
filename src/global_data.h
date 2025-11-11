@@ -43,6 +43,9 @@
 #define IS_NEG_GEN(x)           ((x) & 0x1L)
 #define NEGATE_GEN(x)           ((x) ^ 0x1L)
 
+// Generation/timestamp that never expires.
+#define FOREVER_GEN             (ULLONG_MAX)
+
 // How much to increment the generation/timestamp by to create a new generation.
 // The increment is 2 since the LSB is used to store sign information.
 #define GEN_INC                 (2L)

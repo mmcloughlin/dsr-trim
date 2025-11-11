@@ -177,6 +177,67 @@ void process_deletion(srid_t clause_id) {
   }
 }
 
+// Checks that the given clause is a unit clause with the given unit literal.
+static inline void check_global_unit(int unit_lit, srid_t clause_index) {
+  FATAL_ERR_IF(is_clause_deleted(clause_index),
+    "Trying to evaluate a deleted clause %lld.",
+    TO_DIMACS_CLAUSE(clause_index));
+
+  int *clause_iter = get_clause_start_unsafe(clause_index);
+  int *clause_end = get_clause_end(clause_index);
+  int num_unassigned = 0;
+  for (; clause_iter < clause_end; clause_iter++) {
+    int lit = *clause_iter;
+    peval_t peval_lit = peval_lit_under_alpha(lit);
+    switch (peval_lit) {
+      // We do not expect the clause to be satisfied.
+      case TT:
+        log_fatal_err("Expected unit clause %lld is satisfied.",
+          TO_DIMACS_CLAUSE(clause_index));
+      // Expect only one unassigned literal, which should be the provided one.
+      case UNASSIGNED:
+        if (num_unassigned > 0) {
+          log_fatal_err("Expected unit clause %lld has multiple unassigned literals.",
+            TO_DIMACS_CLAUSE(clause_index));
+        }
+        if (lit != unit_lit) {
+          log_fatal_err("Expected unit clause %lld to have literal %d unassigned, but found %d.",
+            TO_DIMACS_CLAUSE(clause_index), unit_lit, lit);
+        }
+        num_unassigned++;
+        break;
+      // Skip false literals.
+      case FF: break;
+      default: log_fatal_err("Corrupted peval for lit %d and clause %lld.",
+          TO_DIMACS_LIT(lit), TO_DIMACS_CLAUSE(clause_index));
+    }
+  }
+
+  if (num_unassigned != 1) {
+    log_fatal_err("Expected unit clause %lld has %d unassigned literals.",
+      TO_DIMACS_CLAUSE(clause_index), num_unassigned);
+  }
+}
+
+/**
+ * @brief Processes a global unit during parsing.
+ *
+ * @param lit The literal in the global unit.
+ * @param clause_id The clause ID of the global unit, in 1-indexed (DIMACS) form.
+ */
+void process_global_unit(int lit, srid_t clause_id) {
+  FATAL_ERR_IF(clause_id < 0, "Global unit clause ID %lld was negative.", clause_id);
+  clause_id = FROM_DIMACS_CLAUSE(clause_id);
+  if (p_strategy == PS_EAGER) {
+    log_fatal_err("Global units not implemented in eager mode.");
+  } else {
+    // Check that the clause is indeed a unit clause with the given literal.
+    check_global_unit(lit, clause_id);
+    // Record the assignment for all time.
+    set_lit_for_alpha(lit, FOREVER_GEN);
+  }
+}
+
 /** 
  * @brief Inserts a clause ID hint into the hints data structure.
  * 
@@ -376,7 +437,8 @@ line_type_t parse_lsr_line(void) {
       FATAL_ERR_IF(term != 0,
         "Expected terminating 0 after global unit line.");
 
-      // TODO(mbm): process global unit
+      // Process the global unit.
+      process_global_unit(lit, clause_id);
 
       break;
     case ADDITION_LINE:
