@@ -98,12 +98,14 @@ typedef enum peval {
 /**
  * @brief The type of a line in an SR proof file.
  *
- * Each `ADDITION_LINE` adds a redundant clause to the formula, while
- * each `DELETION_LINE` removes one or more clauses from the formula. 
+ * Each `ADDITION_LINE` adds a redundant clause to the formula, each
+ * `DELETION_LINE` removes one or more clauses from the formula, and each
+ * `GLOBAL_UNIT_LINE` records a global unit clause hint.
  */
 typedef enum line_type {
   DELETION_LINE = 10,
-  ADDITION_LINE = 20
+  ADDITION_LINE = 20,
+  GLOBAL_UNIT_LINE = 30
 } line_type_t;
 
 /** 

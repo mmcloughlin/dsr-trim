@@ -237,8 +237,10 @@ line_type_t read_dsr_line_start(FILE *f) {
     switch (c) {
       case DSR_BINARY_ADDITION_LINE_START: return ADDITION_LINE;
       case DSR_BINARY_DELETION_LINE_START: return DELETION_LINE;
+      case DSR_BINARY_GLOBAL_UNIT_LINE_START: return GLOBAL_UNIT_LINE;
       case LSR_BINARY_ADDITION_LINE_START:
       case LSR_BINARY_DELETION_LINE_START:
+      case LSR_BINARY_GLOBAL_UNIT_LINE_START:
         log_fatal_err("Expected a binary DSR proof, got an LSR proof instead.");
       default:
         err_not_binary_proof(f);
@@ -250,6 +252,13 @@ line_type_t read_dsr_line_start(FILE *f) {
       int c = getc_unlocked(f);
       FATAL_ERR_IF(!isspace(c), "Expected whitespace after 'd'.");
       return DELETION_LINE;
+    }
+    if (scan_until_char(f, 'g')) {
+      // We found a global unit line!
+      // Check that the next character is whitespace (and consume it)
+      int c = getc_unlocked(f);
+      FATAL_ERR_IF(!isspace(c), "Expected whitespace after 'g'.");
+      return GLOBAL_UNIT_LINE;
     }
   }
 
@@ -264,9 +273,11 @@ line_type_t read_lsr_line_start(FILE *f, srid_t *line_id) {
     switch (c) {
       case DSR_BINARY_ADDITION_LINE_START:
       case DSR_BINARY_DELETION_LINE_START:
+      case DSR_BINARY_GLOBAL_UNIT_LINE_START:
         log_fatal_err("Expected a binary LSR proof, got a DSR proof instead.");
       case LSR_BINARY_ADDITION_LINE_START: line_type = ADDITION_LINE; break;
       case LSR_BINARY_DELETION_LINE_START: line_type = DELETION_LINE; break;
+      case LSR_BINARY_GLOBAL_UNIT_LINE_START: line_type = GLOBAL_UNIT_LINE; break;
       default:
         err_not_binary_proof(f);
     }
@@ -296,6 +307,16 @@ void write_dsr_deletion_line_start(FILE *f) {
     putc_unlocked(' ', f);
   }
 }
+
+void write_dsr_global_unit_line_start(FILE *f) {
+  if (write_binary) {
+    putc_unlocked(DSR_BINARY_GLOBAL_UNIT_LINE_START, f);
+  } else {
+    putc_unlocked('g', f);
+    putc_unlocked(' ', f);
+  }
+}
+
 void write_lsr_addition_line_start(FILE *f, srid_t line_id) {
   if (write_binary) {
     putc_unlocked(LSR_BINARY_ADDITION_LINE_START, f);
@@ -312,6 +333,17 @@ void write_lsr_deletion_line_start(FILE *f, srid_t line_id) {
   } else {
     write_clause_id(f, line_id);
     putc_unlocked('d', f);
+    putc_unlocked(' ', f);
+  }
+}
+
+void write_lsr_global_unit_line_start(FILE *f, srid_t line_id) {
+  if (write_binary) {
+    putc_unlocked(LSR_BINARY_GLOBAL_UNIT_LINE_START, f);
+    write_clause_id_binary(f, line_id);
+  } else {
+    write_clause_id(f, line_id);
+    putc_unlocked('g', f);
     putc_unlocked(' ', f);
   }
 }

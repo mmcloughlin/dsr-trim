@@ -23,10 +23,14 @@
 // differentiate binary and textual proof files with the first character.
 // We also differentiate DSR and LSR lines, so that the (de)compression tool
 // can automatically detect which kind of proof we are reading.
+#define BINARY_LINE_START_FIRST           (1)
 #define DSR_BINARY_ADDITION_LINE_START    (1)
 #define DSR_BINARY_DELETION_LINE_START    (2)
 #define LSR_BINARY_ADDITION_LINE_START    (3)
 #define LSR_BINARY_DELETION_LINE_START    (4)
+#define DSR_BINARY_GLOBAL_UNIT_LINE_START (5)
+#define LSR_BINARY_GLOBAL_UNIT_LINE_START (6)
+#define BINARY_LINE_START_LAST            (6)
 
 /**
  * @brief Determines if `c` is one of the binary line start characters.
@@ -38,8 +42,8 @@
  * @return 1 if `c` is a binary line start character, and 0 otherwise.
  */
 #define IS_BINARY_LINE_START(c) \
-      (DSR_BINARY_ADDITION_LINE_START <= (c) \
-       && (c) <= LSR_BINARY_DELETION_LINE_START)
+      (BINARY_LINE_START_FIRST <= (c) \
+       && (c) <= BINARY_LINE_START_LAST)
 
 /**
  * @brief Determines if a non-whitespace character `c` may appear in a DSR
@@ -155,8 +159,10 @@ line_type_t read_lsr_line_start(FILE *f, srid_t *line_id);
 
 void write_dsr_addition_line_start(FILE *f);
 void write_dsr_deletion_line_start(FILE *f);
+void write_dsr_global_unit_line_start(FILE *f);
 void write_lsr_addition_line_start(FILE *f, srid_t line_id);
 void write_lsr_deletion_line_start(FILE *f, srid_t line_id);
+void write_lsr_global_unit_line_start(FILE *f, srid_t line_id);
 
 // Ends the line. Prints a 0 and a newline character, if applicable.
 void write_sr_line_end(FILE *f);
