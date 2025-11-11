@@ -351,6 +351,34 @@ line_type_t parse_lsr_line(void) {
       }
 
       break;
+    case GLOBAL_UNIT_LINE:
+      // Only support streaming mode for now.
+      FATAL_ERR_IF(p_strategy != PS_STREAMING,
+        "Global unit lines are only supported in streaming mode.");
+
+      // TODO(mbm): support global units in eager mode
+
+      // Ensure that the line ID is (non-strictly) monotonically increasing
+      FATAL_ERR_IF(line_id < max_line_id,
+        "Global unit line ID (%lld) decreases.", line_id);
+      max_line_id = line_id;
+
+      // TODO(mbm): helper function for parsing global unit line?
+
+      // Read the global unit literal.
+      int lit = read_lit(lsr_file);
+
+      // Read the clause it was derived from.
+      clause_id = read_clause_id(lsr_file);
+
+      // Expect terminating 0.
+      const srid_t term = read_clause_id(lsr_file);
+      FATAL_ERR_IF(term != 0,
+        "Expected terminating 0 after global unit line.");
+
+      // TODO(mbm): process global unit
+
+      break;
     case ADDITION_LINE:
       // Check that the line id is strictly monotonically increasing
       FATAL_ERR_IF(line_id <= max_line_id,
