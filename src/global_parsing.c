@@ -246,6 +246,7 @@ line_type_t read_dsr_line_start(FILE *f) {
         err_not_binary_proof(f);
     }
   } else {
+    // TODO(mbm): calling `scan_until_char()` twice is odd
     if (scan_until_char(f, 'd')) {
       // We found a deletion line!
       // Check that the next character is whitespace (and consume it)
