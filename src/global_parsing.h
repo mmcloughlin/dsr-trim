@@ -45,14 +45,14 @@
  * @brief Determines if a non-whitespace character `c` may appear in a DSR
  *        or an LSR proof file.
  * 
- * Other than whitespace characters, the only acceptable characters that
- * may appear in DSR and LSR proofs are 'd' (for deletion lines),
- * '-' (for literals and negative clause IDs), and the digits [0-9].
+ * Other than whitespace characters, the only acceptable characters that may
+ * appear in DSR and LSR proofs are 'd' (for deletion lines), ('g' for global
+ * unit lines),'-' (for literals and negative clause IDs), and the digits [0-9].
  * 
  * @return `1` if `c` is one of these characters, and `0` otherwise.
  */
 #define IS_HUMAN_READABLE_PROOF_CHAR(c)  \
-      ((c) == 'd' || (c) == '-' || isdigit(c))
+      ((c) == 'd' || (c) == 'g' || (c) == '-' || isdigit(c))
 
 // Uses `fscanf()` to read a single `long` token from `f`.
 // Does not consume any trailing newlines.
