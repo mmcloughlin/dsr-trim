@@ -228,6 +228,14 @@ static inline void check_global_unit(int unit_lit, srid_t clause_index) {
 void process_global_unit(int lit, srid_t clause_id) {
   FATAL_ERR_IF(clause_id < 0, "Global unit clause ID %lld was negative.", clause_id);
   clause_id = FROM_DIMACS_CLAUSE(clause_id);
+  lit = FROM_DIMACS_LIT(lit);
+  logv("Processing global unit: %d from clause %lld.",
+    TO_DIMACS_LIT(lit), TO_DIMACS_CLAUSE(clause_id));
+
+  // Bump the generation to discard previous assumptions.
+  // TODO(mbm): is this the right place to bump alpha generation?
+  alpha_generation += GEN_INC;
+
   if (p_strategy == PS_EAGER) {
     log_fatal_err("Global units not implemented in eager mode.");
   } else {
