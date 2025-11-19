@@ -89,10 +89,6 @@ Potential optimizations:
 // See `clause_mult_t`.
 #define INIT_CLAUSE_MULT_SIZE   (16)
 
-// When setting literals "globally" under initial unit propagation, we use the
-// largest possible generation value.
-#define GLOBAL_GEN   (ULLONG_MAX - 1L)
-
 /**
  * @brief The generation value used when assuming the negation of a
  *        candidate redundant clause.

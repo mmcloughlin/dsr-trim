@@ -234,7 +234,7 @@ void process_global_unit(int lit, srid_t clause_id) {
     // Check that the clause is indeed a unit clause with the given literal.
     check_global_unit(lit, clause_id);
     // Record the assignment for all time.
-    set_lit_for_alpha(lit, FOREVER_GEN);
+    set_lit_for_alpha(lit, GLOBAL_GEN);
   }
 }
 
