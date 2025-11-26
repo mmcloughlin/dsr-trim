@@ -156,6 +156,12 @@ void print_proof_checking_result(void) {
 // Assumes that VAR_FROM_LIT(lit) < alpha_subst_size
 inline void set_lit_for_alpha(int lit, ullong gen) {
   int var = VAR_FROM_LIT(lit);
+
+  // If the current assignment is in the future, preserve it.
+  if (alpha[var] > gen) {
+    return;
+  }
+
   // This flips the least-significant bit if `lit` is negated
   alpha[var] = gen ^ IS_NEG_LIT(lit);
 }
