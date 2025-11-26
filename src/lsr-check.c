@@ -414,9 +414,15 @@ static void check_line(void) {
   alpha_generation += GEN_INC;
   subst_generation++;
 
-  // Make the negated literals of the candidate clause persist for all RAT hints
+
+  // Make the negated literals of the candidate clause persist for all RAT
+  // hints.  Early exit if the candidate clause is already satisfied (in which
+  // case its negation is trivially refuted).
   ullong cc_gen = alpha_generation + (GEN_INC * get_num_RAT_hints());
   srid_t candidate_clause_id = CLAUSE_ID_FROM_LINE_NUM(current_line);
+  if (peval_clause_under_alpha(candidate_clause_id) == -1) {
+    goto finish_line;
+  }
   int pivot = assume_negated_clause(candidate_clause_id, cc_gen);
 
   srid_t *hints_iter = get_hints_start();
