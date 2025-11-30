@@ -91,6 +91,7 @@
 #include "cli.h"
 #include "cnf_parser.h"
 #include "timer.h"
+#include "version.h"
 #include "lsr-check/lsr_data.h"
 #include "lsr-check/lsr_err.h"
 
@@ -118,6 +119,7 @@ static void print_short_help_msg(FILE *f) {
   "\n"
   "  -h        Prints this help message.\n"
   "  --help    Prints a longer help message.\n"
+  "  --version Prints the software version.\n"
   "\n"
   "  -q        Quiet mode.\n"
   "  -v        Verbose mode.\n"
@@ -549,6 +551,9 @@ int main(int argc, char *argv[]) {
           case CLI_HELP_MESSAGE_TO_STDERR:
             print_short_help_msg(stderr);
             return 1;
+          case CLI_VERSION:
+            print_version_info();
+            return 0;
           case CLI_SUCCESS: break;
           default: log_fatal_err("Corrupted CLI result.");
         }

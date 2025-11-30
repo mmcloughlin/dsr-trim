@@ -56,6 +56,7 @@
 #include "cnf_parser.h"
 #include "sr_parser.h"
 #include "timer.h"
+#include "version.h"
 
 /*
 TODOs:
@@ -3782,6 +3783,9 @@ int main(int argc, char **argv) {
         case CLI_HELP_MESSAGE_TO_STDERR:
           print_short_help_msg(stderr);
           return 1;
+        case CLI_VERSION:
+          print_version_info();
+          return 0;
         case CLI_SUCCESS:
           break;
         default:

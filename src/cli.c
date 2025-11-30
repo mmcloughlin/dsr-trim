@@ -96,6 +96,7 @@ cli_res_t cli_handle_opt(cli_opts_t *cli, int opt, int optopt,
   switch (opt) {
   case HELP_MSG_OPT:        return CLI_HELP_MESSAGE;
   case LONG_HELP_MSG_OPT:   return CLI_LONG_HELP_MESSAGE;
+  case VERSION_OPT:         return CLI_VERSION;
   case QUIET_MODE_OPT:      verbosity_level = VL_QUIET; break;
   case VERBOSE_MODE_OPT:
     verbosity_level = VL_VERBOSE;

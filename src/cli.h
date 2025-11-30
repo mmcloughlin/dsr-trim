@@ -24,6 +24,7 @@
 
 #define HELP_MSG_OPT          ('h')
 #define LONG_HELP_MSG_OPT     (130)
+#define VERSION_OPT           (131)
 #define QUIET_MODE_OPT        ('q')
 #define VERBOSE_MODE_OPT      ('v')
 #define VERBOSE_ERRORS_OPT    ('V')
@@ -38,6 +39,7 @@
 
 #define BASE_LONG_OPTS_ARRAY       \
   { "help",      no_argument,       NULL, LONG_HELP_MSG_OPT }, \
+  { "version",   no_argument,       NULL, VERSION_OPT },       \
   { "dir",       required_argument, NULL, DIR_OPT },           \
   { "name",      required_argument, NULL, NAME_OPT },          \
   { "eager",     no_argument,       NULL, EAGER_OPT },         \
@@ -50,6 +52,7 @@ typedef enum cli_handling_result {
   CLI_HELP_MESSAGE,
   CLI_LONG_HELP_MESSAGE,
   CLI_HELP_MESSAGE_TO_STDERR,
+  CLI_VERSION,
 } cli_res_t;
 
 typedef struct common_cli_opts {

@@ -4,10 +4,14 @@ RM     = rm -f
 SRCDIR = src
 BINDIR = bin
 
+# Versioning.
+GIT_VERSION=$(shell git describe --always --dirty --abbrev=12 --exclude '*')
+CFLAGS += -DGIT_VERSION="\"$(GIT_VERSION)\""
+
 # Supporting files
 # These get compiled to `.o` files without linking
 SUPPFILES = cli cnf_parser global_data global_parsing hash_table logger \
-						range_array sr_parser timer xio xmalloc \
+						range_array sr_parser timer version xio xmalloc \
 						lsr-check/lsr_data lsr-check/lsr_err
 SUPPFILESWITHDIR = $(addprefix $(SRCDIR)/,$(SUPPFILES))
 OFILES = $(addsuffix .o,$(SUPPFILESWITHDIR))
