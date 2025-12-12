@@ -397,6 +397,7 @@ line_type_t prepare_next_lsr_line(void) {
 line_type_t parse_lsr_line(void) {
   num_parsed_lines++;
   srid_t line_id, clause_id;
+  int lit;
   line_type_t line_type = read_lsr_line_start(lsr_file, &line_id);
   current_line = LINE_NUM_FROM_LINE_ID(line_id); // Convert out of DIMACS
   switch (line_type) {
@@ -434,19 +435,16 @@ line_type_t parse_lsr_line(void) {
 
       // TODO(mbm): helper function for parsing global unit line?
 
-      // Read the global unit literal.
-      int lit = read_lit(lsr_file);
+      // Read (literal, clause) pairs and process.
+      while ((lit = read_lit(lsr_file)) != 0) {
+        // Read the clause it was derived from.
+        clause_id = read_clause_id(lsr_file);
 
-      // Read the clause it was derived from.
-      clause_id = read_clause_id(lsr_file);
+        FATAL_ERR_IF(clause_id == 0, "Clause ID should not be zero.");
 
-      // Expect terminating 0.
-      const srid_t term = read_clause_id(lsr_file);
-      FATAL_ERR_IF(term != 0,
-        "Expected terminating 0 after global unit line.");
-
-      // Process the global unit.
-      process_global_unit(lit, clause_id);
+        // Process the global unit.
+        process_global_unit(lit, clause_id);
+      }
 
       break;
     case ADDITION_LINE:
